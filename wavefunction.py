@@ -236,17 +236,19 @@ class SchrodingerHydrogen:
     l : int, 角量子数
     m : int, 磁量子数
     Z : int, 原子序数
-    a_miu : float, me*a0/miu ,me为电子质量，a0为波尔半径，miu为约化质量
+    a_mu : float, me*a0/mu ,me为电子质量，a0为波尔半径，mu为约化质量
+    mu : float, 约化质量，默认为1.0
     """
 
-    def __init__(self, n, l, m, Z, a_miu=1):
+    def __init__(self, n, l, m, Z, a_mu=1, mu=1):
         self.n = n
         self.l = l
         self.m = m
         self.Z = Z
-        self.a_miu = a_miu
-        self.c1 = np.sqrt(((2 * Z) / (n * a_miu)) ** 3 * (sp.factorial(n - l - 1) / (2 * n * sp.factorial(n + l))))
-        self.E = -1 / (2 * n**2)
+        self.a_mu = a_mu
+        self.me = mu
+        self.c1 = np.sqrt(((2 * Z) / (n * a_mu)) ** 3 * (sp.factorial(n - l - 1) / (2 * n * sp.factorial(n + l))))
+        self.E = -(mu * Z**2) / (2 * n**2)
 
     def compute_psi(self, r, theta, phi, t=0, isreal=False):
         """
@@ -264,7 +266,7 @@ class SchrodingerHydrogen:
         -------
         array-like : Schrödinger波函数，复数数组
         """
-        rho = 2 * self.Z * r / (self.n * self.a_miu)
+        rho = 2 * self.Z * r / (self.n * self.a_mu)
         c2 = rho**self.l * np.exp(-rho / 2) * np.exp(-1j * self.E * t)
         cR = self.c1 * c2 * sp.genlaguerre(self.n - self.l - 1, 2 * self.l + 1)(rho)
         if isreal and self.m != 0:
