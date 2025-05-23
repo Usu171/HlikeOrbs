@@ -98,6 +98,8 @@ class MonteCarlo:
             elif component == "psi":
                 prob = np.abs(psi)
                 phase = np.angle(psi)
+                if use_squared:
+                    prob = prob**2
             else:
                 raise ValueError("Invalid component for Schrödinger wavefunction. Choose 'density' or 'psi'.")
 

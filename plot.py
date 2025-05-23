@@ -85,7 +85,7 @@ class DiracPlotConfig:
     height: int = 1000
 
 
-def Dirac_plot_all(spinor: wf.DiracSpinor, grid: gr.GridGenerator, config: DiracPlotConfig):
+def Dirac_plot(spinor: wf.DiracSpinor, grid: gr.GridGenerator, config: DiracPlotConfig):
     """可视化 Dirac 波函数
 
     Parameters
@@ -208,7 +208,7 @@ def Dirac_plot_all(spinor: wf.DiracSpinor, grid: gr.GridGenerator, config: Dirac
         if config.plot_type == "all":
             indices = range(4)  # 绘制所有 psi 分量
         else:
-            indices = [int(config.plot_type[-1]) -1] # 仅绘制指定的 psi 分量
+            indices = [int(config.plot_type[-1]) - 1]  # 仅绘制指定的 psi 分量
 
         for i in indices:
             psi_i = spinor_scaled.psi[i]
@@ -257,15 +257,17 @@ def Dirac_plot_all(spinor: wf.DiracSpinor, grid: gr.GridGenerator, config: Dirac
                             cmax=np.pi,
                             showscale=showscale_,
                         ),
-                        row=subplot_map[f"psi{i+1}"][0],
-                        col=subplot_map[f"psi{i+1}"][1],
+                        row=subplot_map[f"psi{i + 1}"][0],
+                        col=subplot_map[f"psi{i + 1}"][1],
                     )
                 except Exception as e:
                     print(f"Error processing psi{i + 1}: {e}")
                     pass
 
     # 相机角度
-    for i, j in itertools.product(range(1, 3 if config.plot_type == "all" else 2), range(1, 4 if config.plot_type == "all" else 2)):
+    for i, j in itertools.product(
+        range(1, 3 if config.plot_type == "all" else 2), range(1, 4 if config.plot_type == "all" else 2)
+    ):
         scene_dict: Dict[str, Any] = dict(camera=config.camera)
         if config.xyzrange is not None:
             if isinstance(config.xyzrange, tuple):
@@ -842,7 +844,7 @@ def plot_plane_wavefunction_3D(
 @dataclass
 class VolumePlotConfig:
     """
-    体视视化配置，用于三维体数据的可视化
+    体视化配置
 
     Parameters
     ----------
@@ -864,6 +866,8 @@ class VolumePlotConfig:
         体视化的等值面值（相对于最大值或绝对值）
     relative_isovalue : bool
         True 时使用相对于最大值的 isovalue，False 时使用绝对值
+    surface_count:
+        体视化的等值面数量
     camera : dict
         3D 场景的相机设置
     xyzrange : Optional[Union[float, Tuple[float, float, float]]]
@@ -883,6 +887,7 @@ class VolumePlotConfig:
     opacity: float = 0.5
     isovalue: float = 0.1
     relative_isovalue: bool = True
+    surface_count: int = 20
     camera: dict = field(
         default_factory=lambda: dict(
             eye=dict(x=1.5, y=1.5, z=1.5),
@@ -965,7 +970,7 @@ def plot_volume_wavefunction(
             isomin=isovalue,
             isomax=max_value,
             opacity=config.opacity,
-            surface_count=20,  # 控制表面数量
+            surface_count=config.surface_count,
             colorscale=config.color,
             showscale=True,
             colorbar=dict(title="Magnitude"),

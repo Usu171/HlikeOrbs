@@ -1,9 +1,11 @@
 import numpy as np
-from typing import Tuple
+from typing import Tuple, Union
 
 
 class GridGenerator:
-    def __init__(self, range_size, points_per_dim):
+    def __init__(
+        self, range_size: Union[float, Tuple[float, float, float]], points_per_dim: Union[int, Tuple[int, int, int]]
+    ):
         """
         初始化网格生成器
 
@@ -30,7 +32,14 @@ class GridGenerator:
         self.dV = None
 
     def generate_grid(self):
-        """生成3D网格"""
+        """
+        生成3D网格
+
+        Returns
+        -------
+        X, Y, Z : np.ndarray
+            三维坐标
+        """
         # 处理范围参数
         if isinstance(self.range_size, (int, float)):
             x_range = (-self.range_size, self.range_size)
@@ -76,7 +85,7 @@ class GridGenerator:
 
 class PlaneGridGenerator:
     """
-    平面网格生成器，用于生成二维平面网格
+    平面网格生成器
 
     Parameters
     ----------
@@ -89,15 +98,22 @@ class PlaneGridGenerator:
     points_per_dim : int
         每维度的点数
     rotation_angle : float
-        绕法向量旋转的角度（弧度）
+        绕法向量旋转的角度（度）
     """
 
-    def __init__(self, center: tuple, normal: tuple, size: float, points_per_dim: int, rotation_angle: float = 0.0):
+    def __init__(
+        self,
+        center: Tuple[float, float, float],
+        normal: Tuple[float, float, float],
+        size: Union[float, Tuple[float, float]],
+        points_per_dim: Union[int, Tuple[int, int]],
+        rotation_angle: float = 0.0,
+    ):
         self.center = center
         self.normal = normal
         self.size = size
         self.points_per_dim = points_per_dim
-        self.rotation_angle = rotation_angle
+        self.rotation_angle = np.deg2rad(rotation_angle)
         self.X = None
         self.Y = None
         self.Z = None
@@ -117,6 +133,21 @@ class PlaneGridGenerator:
         X, Y, Z : np.ndarray
             平面网格的三维坐标，形状为 (points_per_dim, points_per_dim)
         """
+        # 处理范围参数
+        if isinstance(self.size, (int, float)):
+            u_size = v_size = self.size
+        elif len(self.size) == 2:
+            u_size, v_size = self.size
+        else:
+            raise ValueError("size should be either a number or a tuple of 2 numbers")
+        
+        if isinstance(self.points_per_dim, int):
+            u_points = v_points = self.points_per_dim
+        elif len(self.points_per_dim) == 2:
+            u_points, v_points = self.points_per_dim
+        else:
+            raise ValueError("points_per_dim should be either an integer or a tuple of 2 integers")
+
         # 归一化法向量
         normal = np.array(self.normal) / np.linalg.norm(self.normal)
 
@@ -138,14 +169,14 @@ class PlaneGridGenerator:
             v1, v2 = v1_rot, v2_rot
 
         # 生成二维网格
-        u = np.linspace(-self.size / 2, self.size / 2, self.points_per_dim)
-        v = np.linspace(-self.size / 2, self.size / 2, self.points_per_dim)
+        u = np.linspace(-u_size / 2, u_size / 2, u_points)
+        v = np.linspace(-v_size / 2, v_size / 2, v_points)
         self.u = u
         self.v = v
         self.du = u[1] - u[0] if len(u) > 1 else 0
         self.dv = v[1] - v[0] if len(v) > 1 else 0
         U, V = np.meshgrid(u, v, indexing="ij")
-        self.U, self.V = np.meshgrid(u, v, indexing="ij")
+        self.U, self.V = U, V
 
         # 计算三维坐标
         center = np.array(self.center)
