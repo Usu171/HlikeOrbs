@@ -25,8 +25,10 @@ class DiracPlotConfig:
         密度等值面大小
     psi_scale : Union[float, Tuple[float, float, float, float]]
         波函数分量等值面的大小（可以是单一值或四个值的元组）
-    step : int
-        current采样的步长
+    points_per_unit : float
+        current 每个单位长度采样的数量，如果 use_fixed_points 为 True，则为采样点的数量
+    use_fixed_points : bool
+        是否使用固定数量的采样点
     clip : bool
         是否启用 phi 角度裁剪
     phi_min, phi_max : float, float
@@ -60,7 +62,8 @@ class DiracPlotConfig:
     plot_type: str = "all"  # 新增字段，指定绘图类型
     density_scale: float = 0.01
     psi_scale: Union[float, Tuple[float, float, float, float]] = 0.1
-    step: int = 10
+    points_per_unit: float = 0.35
+    use_fixed_points: bool = False
     clip: bool = False
     phi_min: float = 0
     phi_max: float = 90
@@ -164,12 +167,26 @@ def Dirac_plot(spinor: wf.DiracSpinor, grid: gr.GridGenerator, config: DiracPlot
     # 流
     if config.plot_type in ["current", "all"]:
         current = spinor.current()
-        X_, Y_, Z_ = (
-            X[:: config.step, :: config.step, :: config.step],
-            Y[:: config.step, :: config.step, :: config.step],
-            Z[:: config.step, :: config.step, :: config.step],
-        )
-        current = current[:, ::config.step, ::config.step, ::config.step]
+
+        if config.use_fixed_points:
+            n_x = n_y = n_z = max(2, int(config.points_per_unit))
+            idx_x = np.linspace(0, len(grid.x) - 1, n_x, dtype=int)
+            idx_y = np.linspace(0, len(grid.y) - 1, n_y, dtype=int)
+            idx_z = np.linspace(0, len(grid.z) - 1, n_z, dtype=int)
+        else:
+        # 每个维度的总长度
+            Lx, Ly, Lz = grid.x[-1] - grid.x[0], grid.y[-1] - grid.y[0], grid.z[-1] - grid.z[0]
+            # 每个维度中采样的点数
+            n_x = max(2, int(config.points_per_unit * Lx) + 1)
+            n_y = max(2, int(config.points_per_unit * Ly) + 1)
+            n_z = max(2, int(config.points_per_unit * Lz) + 1)
+            idx_x = np.linspace(0, len(grid.x) - 1, n_x, dtype=int)
+            idx_y = np.linspace(0, len(grid.y) - 1, n_y, dtype=int)
+            idx_z = np.linspace(0, len(grid.z) - 1, n_z, dtype=int)
+
+        X_, Y_, Z_ = np.meshgrid(grid.x[idx_x], grid.y[idx_y], grid.z[idx_z], indexing='ij')
+        current = current[:, idx_x][:, :, idx_y][:, :, :, idx_z]
+
         norm = np.sqrt(np.sum(current**2, axis=0))
         scaled = (norm / norm.max()) ** config.current_exponent / config.current_factor
         norm_safe = np.where(norm > 0, norm, 1e-10)
