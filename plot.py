@@ -169,7 +169,7 @@ def Dirac_plot(spinor: wf.DiracSpinor, grid: gr.GridGenerator, config: DiracPlot
             Y[:: config.step, :: config.step, :: config.step],
             Z[:: config.step, :: config.step, :: config.step],
         )
-        current = current[:, ::10, ::10, ::10]
+        current = current[:, ::config.step, ::config.step, ::config.step]
         norm = np.sqrt(np.sum(current**2, axis=0))
         scaled = (norm / norm.max()) ** config.current_exponent / config.current_factor
         norm_safe = np.where(norm > 0, norm, 1e-10)
