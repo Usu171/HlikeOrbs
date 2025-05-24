@@ -63,8 +63,6 @@ for i, k in enumerate(k_values):
     grid = gr.GridGenerator(range_size, points_per_dim)
     X, Y, Z = grid.generate_grid()
     
-    # 绘图配置
-    
     for j, m in enumerate(m_values):
         if m not in valid_m:
             # 为无效组合生成空白图片
