@@ -3,7 +3,7 @@
 ![Hydrogenic Orbitals Visualized](assets/1.png)
 
 ![Dirac Orbitals 1s~4f](assets/dirac_f.webp)
-Dirac orbital 1s2p3s4f density, current, and four components ($\psi_1$, $\psi_2$ (top) $\psi_3$, $\psi_4$ (bottom)), with k ranging from -4 (bottom) to 3 (top) and m from -7/2 (left) to 7/2 (right) (excluding m=0).  
+Dirac orbital 1s2p3d4f density, current, and four components ($\psi_1$, $\psi_2$ (top) $\psi_3$, $\psi_4$ (bottom)), with k ranging from -4 (bottom) to 3 (top) and m from -7/2 (left) to 7/2 (right) (excluding m=0).  
 Isosurface level at 0.1×max value. All plots are scaled, isosurface sizes are not directly comparable.  
 Generated using `fig_grid.py`
 
