@@ -8,7 +8,9 @@ Isosurface level at 0.1×max value. All plots are scaled, isosurface sizes are n
 Generated using `fig_grid.py`
 
 ![Dirac Orbitals 1s~6h](assets/dirac_h.png)
-1s~6h version k: -6~5 m: -11/2~11/2
+1s~6h version  
+k: -6~5  
+m: -11/2~11/2
 
 ## Dependencies
 
