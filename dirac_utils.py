@@ -42,16 +42,12 @@ def Ank(k, n_k, g_k, l_nk, e_nk, Z, alpha):
         return np.sqrt(
             (1 / (2 * k * (k - g_k))) * (l_nk / (g_k)) *
             (1 / sp.gamma(1 + 2 * g_k)) * 1 / (2 * g_k) * (Z * alpha / k)**2)
-    else:
-        print("n_k is negative")
-        return 0
+    print("n_k is negative")
+    return 0
 
 
 def L_ab(a, b, rho):
-    if a < 0:
-        return 0
-    else:
-        return sp.genlaguerre(a, b)(rho)
+    return 0 if a < 0 else sp.genlaguerre(a, b)(rho)
 
 
 def r1(rho, n_k, g_k):

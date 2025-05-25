@@ -330,7 +330,7 @@ def generate_hybrid_orbital(
     # 验证输入
     if len(wavefunctions) != len(coefficients):
         raise ValueError("Number of wavefunctions must match number of coefficients.")
-    if len(wavefunctions) == 0:
+    if not wavefunctions:
         raise ValueError("Wavefunctions list cannot be empty.")
 
     # 检查波函数类型一致性
@@ -341,11 +341,11 @@ def generate_hybrid_orbital(
     # 检查波函数形状一致性
     if isinstance(wavefunctions[0], BaseSpinor):
         ref_shape = wavefunctions[0].psi.shape
-        if not all(wf.psi.shape == ref_shape for wf in wavefunctions):
+        if any(wf.psi.shape != ref_shape for wf in wavefunctions):
             raise ValueError("All BaseSpinor wavefunctions must have the same shape.")
     else:
         ref_shape = wavefunctions[0].shape
-        if not all(wf.shape == ref_shape for wf in wavefunctions):
+        if any(wf.shape != ref_shape for wf in wavefunctions):
             raise ValueError("All np.ndarray wavefunctions must have the same shape.")
 
     # 系数归一化

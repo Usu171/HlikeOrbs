@@ -13,10 +13,7 @@ def get_m(n):
     return [x for x in [i + 0.5 for i in range(-n, n)] if x != 0]
 
 def get_n(k):
-    if k > 0:
-        return k + 1
-    else:
-        return abs(k)
+    return k + 1 if k > 0 else abs(k)
 
 def get_grid_params(k):
     points_per_dim = 300
@@ -55,14 +52,14 @@ plt_config = plot.DiracPlotConfig(
 
 
 # 生成并保存每个子图
-for i, k in enumerate(k_values):
+for k in k_values:
     n = get_n(k)
     valid_m = get_m(k)
     # 获取动态网格参数
     range_size, points_per_dim = get_grid_params(k)
     grid = gr.GridGenerator(range_size, points_per_dim)
     X, Y, Z = grid.generate_grid()
-    
+
     for j, m in enumerate(m_values):
         if m not in valid_m:
             # 为无效组合生成空白图片
@@ -74,22 +71,20 @@ for i, k in enumerate(k_values):
             Psi_dirac = wf.DiracHydrogen(n, k, m, 1)
             print(f"计算 k={k}, m={m}, n={n}, n_k={Psi_dirac.n_k}, range_size={range_size}, points_per_dim={points_per_dim}")
             spinor = Psi_dirac.compute_psi_xyz(X, Y, Z, t=0)
-            
+
             # 生成图
             fig = plot.Dirac_plot(spinor, grid, plt_config)
-            
+
             # 保存为 PNG
             output_path = os.path.join(output_dir, f'k_{k}_m_{m:.1f}.png')
             fig.write_image(output_path, format='png')
             print(f"已保存子图: {output_path}")
-            
+
         except Exception as e:
             print(f"错误 k={k}, m={m}, n={n}: {e}")
             # 为错误情况生成占位图
             error_img = Image.new('RGB', (1500, 1000), color='white')
             error_img.save(os.path.join(output_dir, f'k_{k}_m_{m:.1f}.png'))
-            continue
-
 rows, cols = len(k_values), len(m_values)
 subplot_width, subplot_height = 1500, 1000
 grid_img = Image.new('RGB', (cols * subplot_width, rows * subplot_height), color='white')
@@ -105,7 +100,7 @@ for i, k in enumerate(k_values):
 
             paste_y = (rows - 1 - i) * subplot_height
             paste_x = j * subplot_width
-            
+
             grid_img.paste(img, (paste_x, paste_y))
         except Exception as e:
             print(f"读取图片错误 {img_path}: {e}")

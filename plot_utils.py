@@ -15,9 +15,7 @@ def clip_faces_by_phi(vertices, faces, phi_min, phi_max):
     mask = create_phi_mask(phi, phi_min, phi_max)
 
     face_in_range = np.all(mask[faces], axis=1)
-    faces_clipped = faces[~face_in_range]
-
-    return faces_clipped
+    return faces[~face_in_range]
 
 
 def clip_current_by_phi(X, Y, Z, current, phi_min, phi_max):
