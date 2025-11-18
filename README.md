@@ -12,6 +12,10 @@ Generated using `fig_grid.py`
 k: -6 - 5  
 m: -11/2 - 11/2
 
+> New image using new [gl-mesh3d](https://github.com/Usu171/gl-mesh3d)
+> It supports cyclic color mapping, avoid phase coloring issues
+> [New plotly.js](https://github.com/Usu171/data/blob/main/plotly-251118-modify.min.js) built based on this library
+
 ## Dependencies
 
 - plotly
